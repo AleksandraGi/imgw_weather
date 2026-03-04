@@ -12,69 +12,114 @@ from tkinter import ttk
 # napisać datę i godzinę pomiaru oraz wybrany parametr 
 
 
+def download_data():
+    url = "https://danepubliczne.imgw.pl/api/data/synop"  # wszystkie stacje, JSON
+    resp = requests.get(url)
+    if resp.status_code == 200:
+        data = resp.json()
+        # print(data[0])        # wypisz pierwszą stację
+        return data
+    else:
+        print("Błąd:", resp.status_code)
+        return None
 
-url = "https://danepubliczne.imgw.pl/api/data/synop"  # wszystkie stacje, JSON
-resp = requests.get(url)
-if resp.status_code == 200:
-    data = resp.json()
-    # wypisz pierwszą stację
-    # print(data[0])
+    
+
+def prepare_dataframe(data):
     df = pd.DataFrame(data)
     df.rename(columns={'id_stacji':'ID stacji', 'stacja':'Stacja', 'data_pomiaru':'Data pomiaru', 'godzina_pomiaru':'Godzina pomiaru', 'temperatura':'Temperatura', 'predkosc_wiatru':'Prędkość wiatru',
-                       'kierunek_wiatru':'Kierunek wiatru', 'wilgotnosc_wzgledna':'Wilgotność względna', 'suma_opadu':'Suma opadu', 'cisnienie':'Ciśnienie'}, inplace=True)
-    
+                        'kierunek_wiatru':'Kierunek wiatru', 'wilgotnosc_wzgledna':'Wilgotność względna', 'suma_opadu':'Suma opadu', 'cisnienie':'Ciśnienie'}, inplace=True)
+        
     cities = df['Stacja'].tolist()
     columns = df.columns[5:].tolist()
-    print(columns)
 
-else:
-    print("Błąd:", resp.status_code)
+    return df, cities, columns
+
+def create_gui(df, cities, columns):
+    pass
+
+# def main():
+#     data = download_data()
+#     if data:
+#         df, cities, columns = prepare_dataframe(data)
+#         create_gui(df, cities, columns)
 
 
+# url = "https://danepubliczne.imgw.pl/api/data/synop"  # wszystkie stacje, JSON
+# resp = requests.get(url)
+# if resp.status_code == 200:
+#     data = resp.json()
+#     # wypisz pierwszą stację
+#     # print(data[0])
+#     df = pd.DataFrame(data)
+#     df.rename(columns={'id_stacji':'ID stacji', 'stacja':'Stacja', 'data_pomiaru':'Data pomiaru', 'godzina_pomiaru':'Godzina pomiaru', 'temperatura':'Temperatura', 'predkosc_wiatru':'Prędkość wiatru',
+#                        'kierunek_wiatru':'Kierunek wiatru', 'wilgotnosc_wzgledna':'Wilgotność względna', 'suma_opadu':'Suma opadu', 'cisnienie':'Ciśnienie'}, inplace=True)
+    
+#     cities = df['Stacja'].tolist()
+#     columns = df.columns[5:].tolist()
+#     print(columns)
 
-## WINDOW
+# else:
+#     print("Błąd:", resp.status_code)
+
+
+data = download_data()
+if data:
+    df, cities, columns = prepare_dataframe(data)
+
+### WINDOW
 def on_select(event):
     # Funkcja wywoływana po wybraniu opcji
-    print(f"Wybrano: {combobox.get()}")
+    print(f"Miasto: {city_combobox.get()}")
+    print(f"Parametr: {param_combobox.get()}")
 
-# Główne okno
+
+# ------------------ WINDOW ------------------
 root = tk.Tk()
 root.title("WEATHER")
 root.geometry("300x200")
 
 
-## CHOOSING CITY
-# Tworzenie ComboBox
-# state="readonly" zapobiega wpisywaniu własnego tekstu przez użytkownika
-combobox = ttk.Combobox(root, values=cities, state="readonly")
-combobox.current(0)  # Ustawia domyślnie pierwszą opcję (indeks 0)
-combobox.pack(pady=20)
+# ------------------ CITY ------------------
+def on_city_select(event):
+    print(f"Wybrano miejscowość: {city_combobox.get()}")
 
-# Wiązanie zdarzenia wyboru
-combobox.bind("<<ComboboxSelected>>", on_select)
-
-# Przycisk pobierający wartość
-def get_value():
-    print(f"Got with button: {combobox.get()}")
-
-button = tk.Button(root, text="Get value", command=get_value)
-button.pack()
+city_combobox = ttk.Combobox(root, values=cities, state="readonly")
+city_combobox.current(0) 
+city_combobox.pack(pady=10)
+city_combobox.bind("<<ComboboxSelected>>", on_select)
 
 
+# ------------------ PARAMETER ------------------
+def on_param_select(event):
+    print(f"Wybrano parametr: {param_combobox.get()}")
 
-## CHOOSING PARAMETRT
-combobox = ttk.Combobox(root, values=columns, state="readonly")
-combobox.current(0)  # Ustawia domyślnie pierwszą opcję (indeks 0)
-combobox.pack(pady=20)
+param_combobox = ttk.Combobox(root, values=columns, state="readonly")
+param_combobox.current(0) 
+param_combobox.pack(pady=20)
+param_combobox.bind("<<ComboboxSelected>>", on_select)
 
-# Wiązanie zdarzenia wyboru
-combobox.bind("<<ComboboxSelected>>", on_select)
+# ------------------ BUTTON ------------------
+def show_value():
+    city = city_combobox.get()
+    param = param_combobox.get()
 
-# Przycisk pobierający wartość
-def get_value2():
-    print(f"Got with button: {combobox.get()}")
+    # row with values for that station
+    row = df[df["Stacja"] == city]
+    print(row)
 
-button = tk.Button(root, text="Get value", command=get_value2)
+    if not row.empty:
+        value = row.iloc[0][param]
+        print(f"{city} | {param}: {value}")
+    else:
+        print("Brak danych")
+
+    result_label = tk.Label(root, text="")
+    result_label.pack()
+    result_label.config(text=f"{city} | {param}: {value}")
+
+
+button = tk.Button(root, text="Get value", command=show_value)
 button.pack()
 
 root.mainloop()
