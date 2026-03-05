@@ -31,8 +31,8 @@ def prepare_dataframe(data):
     df = pd.DataFrame(data)
     df.rename(columns={'id_stacji':'ID stacji', 'stacja':'Stacja', 'data_pomiaru':'Data pomiaru', 
                        'godzina_pomiaru':'Godzina pomiaru', 'temperatura':'Temperatura', 'predkosc_wiatru':'Prędkość wiatru',
-                        'kierunek_wiatru':'Kierunek wiatru', 'wilgotnosc_wzgledna':'Wilgotność względna', 
-                        'suma_opadu':'Suma opadu', 'cisnienie':'Ciśnienie'}, inplace=True)
+                       'kierunek_wiatru':'Kierunek wiatru', 'wilgotnosc_wzgledna':'Wilgotność względna', 
+                       'suma_opadu':'Suma opadu', 'cisnienie':'Ciśnienie'}, inplace=True)
     # df.set_index("Stacja", inplace=True)      # CHECK ONE DAY
     cities = df['Stacja'].tolist()
     weather_columns = ["Temperatura", "Prędkość wiatru", "Kierunek wiatru", "Wilgotność względna", "Suma opadu", "Ciśnienie"]
@@ -123,5 +123,8 @@ sort alfabetically cities ()
     cities = sorted(df.index.tolist())  # Alphabetically sort city names
 
 2) Different text for different parameters: units (opady w mm, temperatrura w stopniach Celsjusza, wiatr rysunek)
-    
+
+3) Add languages
+
+
 """
