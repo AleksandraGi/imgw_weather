@@ -7,8 +7,12 @@ import requests
 import pandas as pd
 import tkinter as tk
 from tkinter import ttk
+from tkinter import *
 
 API_URL = "https://danepubliczne.imgw.pl/api/data/synop"  
+BACKGROUND_COLOUR = "#8C99C6"
+TEXT_COLOUR = '#FFFFFF'
+
 
 def download_data():
     """
@@ -49,6 +53,12 @@ def create_gui(df, cities, columns):
     root.title("Weather App")
     root.geometry("400x300")
     root.resizable(False, False)
+
+    icon = PhotoImage(file='icon/cloudy.png')
+    root.iconphoto(True, icon)
+
+    root.config(background=BACKGROUND_COLOUR)
+    # root.configure(bg=BACKGROUND_COLOUR)
 
     # ------------------ CITY ------------------
     tk.Label(root, text="Choose city:").pack(pady=(15, 5))              # Label for city selection

@@ -1,6 +1,6 @@
 import requests
 import pandas as pd
-
+import tkinter as tk
 
 API_URL = "http://danepubliczne.imgw.pl/api/data/hydro/"
 
@@ -38,11 +38,15 @@ def prepare_hydro_dataframe(data):
 
 
 raw_data = prepare_hydro_dataframe(get_hydro_data())
+print(raw_data)
 
 
 
-def create_gui(x):
-    pass
+def create_gui(df):
+    root = tk.Tk()
+    root.title("Weather App")
+    root.geometry("400x300")
+    root.resizable(False, False)
 
 
 def main():
