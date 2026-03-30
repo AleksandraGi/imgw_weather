@@ -41,19 +41,18 @@ raw_data = prepare_hydro_dataframe(get_hydro_data())
 
 
 
+def create_gui(x):
+    pass
 
-# def create_gui(x):
-#     pass
 
+def main():
+    """
+    Main function that downloads data, prepare it and launch GUI.
+    """
+    data = get_hydro_data()
+    if data:
+        df, cities, columns = get_hydro_data(data)
+        create_gui(df, cities, columns)
 
-# def main():
-#     """
-#     Main function that downloads data, prepare it and launch GUI.
-#     """
-#     data = get_hydro_data()
-#     if data:
-#         df, cities, columns = get_hydro_data(data)
-#         create_gui(df, cities, columns)
-
-# if __name__=="__main__":
-#     main()
+if __name__=="__main__":
+    main()
